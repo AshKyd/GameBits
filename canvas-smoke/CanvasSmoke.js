@@ -40,7 +40,7 @@ var CanvasSmoke = function(config){
 	/**
 	 * How fast do particles travel?
 	 */
-	 this.particleAcceleration = 1;
+	this.particleAcceleration = 1;
 	 
 	/**
 	 * Sin inhibition.
@@ -48,6 +48,18 @@ var CanvasSmoke = function(config){
 	 * tornado effect, higher values a more natural plume.
 	 */
 	this.sinInhibition = 1000;
+	
+	/**
+	 * Permissable randomness in size of particle.
+	 * this.particleSize*this.maxSize;
+	 */
+	this.maxSize = 3;
+	
+	/**
+	 * The randomness of the plume. Low values will give a wavy
+	 * metronome style plume. Larger values a more even, randomised one.
+	 */
+	this.randomness = 20000;
 	
 	this.prepare();
 }
@@ -61,10 +73,18 @@ CanvasSmoke.prototype = {
 		for(var i=0; i<this.particleCount; i++){
 			// particles have x, y, size, momentum, visibility.
 			// I'm not sure if this is faster than making these objects.
-			var momentum = Math.random()*20000;
-			var size = Math.random()*3;
+			
+			// The momentum does
+			var momentum = Math.random()*this.randomness;
+			var size = Math.random()*this.maxSize;
+			
+			// Set at the center of the plume.
 			var x = this.w/2;
+			
+			// Set randomly anywhere in the plume.
 			var y = Math.random() * this.h;
+			
+			// Add the particle to the array.
 			this.particles.push([x,y,size,momentum,0]);
 		}
 	},
