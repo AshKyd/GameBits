@@ -21,23 +21,25 @@ window.onload = function(){
 	// Smoke 1 renders the pre-made, low-res PNG image.
 	var smoke1 = new CanvasSmoke({
 		ctx : ctx,
-		x : 100,
+		x : 300,
 		y : 300,
 		w : 50,
 		h : 300,
 		image: customImage,
 		particleSize : 20,
-		particleCount : 100
+		particleCount : 100,
+		angle:Math.PI*1.5
 	});
 	
 	// Smoke 2 just renders placeholder squares.
 	var smoke2 = new CanvasSmoke({
 		ctx : ctx,
-		x : 300,
+		x : 400,
 		y : 300,
 		w : 50,
 		h : 300,
-		particleCount:150
+		particleCount:50,
+		particleSize:6
 	});
 	
 	var doTick = true;

@@ -71,6 +71,11 @@ var CanvasSmoke = function(config){
 	 */
 	this.randomness = 10000;
 	
+	/**
+	 * The angle to rotate the plume.
+	 */
+	this.angle = typeof config.angle == 'undefined' ? 0 : config.angle;
+	
 	this.prepare();
 }
 
@@ -99,6 +104,15 @@ CanvasSmoke.prototype = {
 		}
 	},
 	tick : function(){
+		
+		this.ctx.save();
+		this.ctx.translate(this.x + this.w/2,this.y);
+			
+		// Rotate our canvas to the specified angle.
+		if(this.angle){
+			this.ctx.rotate(this.angle);
+		}
+		
 		// For each particle
 		for(var i=0; i<this.particles.length; i++){
 			var particle = this.particles[i];
@@ -111,17 +125,23 @@ CanvasSmoke.prototype = {
 
 			// Work out the new x location based on the system time.
 			var x = Math.sin((+new Date+particle[3])/this.sinInhibition)*(positionRelative*this.w*(particle[3]/10000))+particle[0];
-			// Offset based on the global position and particle size.s
-			x = x + this.x - particleSize/2;
 			
-			var y = 0-particle[1]+this.y;
+			// Offset based on the particle size.s
+			x -= particleSize/2;
 			
+			var y = 0-particle[1];
+			
+			// If the particle is visible, adjust the visibility.
 			if(particle[4]>0){
 				particle[4] = 1-positionRelative;
 			}
-			this.ctx.globalAlpha = particle[4];
-			//~ console.log(particle[4]);
 			
+			// Set the global alpha based on particle visibility.
+			this.ctx.globalAlpha = particle[4];
+			
+			// Draw our image or placeholder boxes.
+			
+			//~ console.log(x);
 			if(this.particleImage){
 				this.ctx.drawImage(this.particleImage,x,y,particleSize,particleSize);
 			} else {
@@ -130,11 +150,14 @@ CanvasSmoke.prototype = {
 			
 			particle[1]+=this.particleAcceleration;
 			
+			// Reset the particle when it gets to the top.
 			if(particle[1] > this.h){
 				particle[1] = 0;
 				particle[4] = 1;
 			}
 		}
-		this.ctx.globalAlpha = 1;
+		
+		// Restore the settings as they were.
+		this.ctx.restore();
 	}
 }
