@@ -14,20 +14,30 @@ window.onload = function(){
 	var canvas = document.getElementById('demo');
 	ctx = canvas.getContext('2d');
 	
+	// Load up a PNG image we created earlier.
+	var customImage = new Image();
+	customImage.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKBAMAAAB/HNKOAAAABGdBTUEAALGPC/xhBQAAABhQTFRFAAAAiYmJbGxse3t7WVlZQkJCZGRkaGho5q/OlAAAAAh0Uk5TABBWLo6Rg2zR4kHUAAAAN0lEQVR42mNggAJBASAhrKQswMBonpZuwMCo5uqmzMBcEhpSDCUZ1VzcFBkYjMqKDBgYmI2MGQDEbQg+s8VOJwAAAABJRU5ErkJggg==';
+	
+	// Smoke 1 renders the pre-made, low-res PNG image.
 	var smoke1 = new CanvasSmoke({
 		ctx : ctx,
 		x : 100,
 		y : 300,
-		w : 20,
-		h : 100
+		w : 50,
+		h : 300,
+		image: customImage,
+		particleSize : 20,
+		particleCount : 100
 	});
 	
+	// Smoke 2 just renders placeholder squares.
 	var smoke2 = new CanvasSmoke({
 		ctx : ctx,
-		x : 150,
-		y : 275,
-		w : 15,
-		h : 75
+		x : 300,
+		y : 300,
+		w : 50,
+		h : 300,
+		particleCount:150
 	});
 	
 	var doTick = true;

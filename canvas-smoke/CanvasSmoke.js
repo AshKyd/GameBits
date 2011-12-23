@@ -29,25 +29,35 @@ var CanvasSmoke = function(config){
 	/**
 	 * How many particles per plume?
 	 */
-	this.particleCount = 50;
+	this.particleCount = typeof config.particleCount == 'undefined' ? 50 : config.particleCount;
 	//~ this.particleCount = 1;
 	
 	/**
 	 * Size in pixels of our particles.
 	 */
-	this.particleSize = 3;
+	this.particleSize = typeof config.particleSize == 'undefined' ? 3 : config.particleSize;
 	
 	/**
 	 * How fast do particles travel?
 	 */
 	this.particleAcceleration = 1;
+	
+	/**
+	 * How much bigger should the particles grow?
+	 */
+	this.particleGrowth = 3;
+	
+	/**
+	 * Render a particular graphic in place of a box.
+	 */
+	this.particleImage = typeof config.image == 'undefined' ? false : config.image;
 	 
 	/**
 	 * Sin inhibition.
 	 * How wide do we want the sin function to be. Lower values give a 
 	 * tornado effect, higher values a more natural plume.
 	 */
-	this.sinInhibition = 1000;
+	this.sinInhibition = 2000;
 	
 	/**
 	 * Permissable randomness in size of particle.
@@ -59,7 +69,7 @@ var CanvasSmoke = function(config){
 	 * The randomness of the plume. Low values will give a wavy
 	 * metronome style plume. Larger values a more even, randomised one.
 	 */
-	this.randomness = 20000;
+	this.randomness = 10000;
 	
 	this.prepare();
 }
@@ -96,14 +106,28 @@ CanvasSmoke.prototype = {
 			// Work out the distance from the bottom (in decimal; 1=top).
 			var positionRelative = particle[1]/this.h;
 			
+			// Particle size based on the relative growth specified.
+			var particleSize = this.particleSize*(1+this.particleGrowth * positionRelative);
+
 			// Work out the new x location based on the system time.
-			var x = Math.sin((+new Date+particle[3])/this.sinInhibition)*(positionRelative*this.w)+particle[0];
+			var x = Math.sin((+new Date+particle[3])/this.sinInhibition)*(positionRelative*this.w*(particle[3]/10000))+particle[0];
+			// Offset based on the global position and particle size.s
+			x = x + this.x - particleSize/2;
+			
+			var y = 0-particle[1]+this.y;
+			
 			if(particle[4]>0){
 				particle[4] = 1-positionRelative;
 			}
 			this.ctx.globalAlpha = particle[4];
 			//~ console.log(particle[4]);
-			this.ctx.fillRect(x+this.x,0-particle[1]+this.y,this.particleSize,this.particleSize);
+			
+			if(this.particleImage){
+				this.ctx.drawImage(this.particleImage,x,y,particleSize,particleSize);
+			} else {
+				this.ctx.fillRect(x,y,particleSize,particleSize);
+			}
+			
 			particle[1]+=this.particleAcceleration;
 			
 			if(particle[1] > this.h){
