@@ -20,16 +20,17 @@ var CanvasExplosion = function(config){
 	
 	this.layers = [
 		{fill:this.makeCircularGradient(192,128,0), size:this.w/2, count:1, life:.8, speed:0,growth:20},
-		{fill:this.makeCircularGradient(128,128,128), size:this.w/30, count:10, life:1, speed:0,growth:50},
-		{fill:this.makeCircularGradient(255,0,0), size:this.w/20, count:5, life:.8, speed:0,growth:50},
-		{fill:this.makeCircularGradient(255,64,0), size:this.w/20, count:5, life:.6, speed:0,growth:50},
-		{fill:this.makeCircularGradient(255,128,0), size:this.w/20, count:5, life:.5, speed:0,growth:80},
-		{fill:'grey', size:1, count:10, life:.8, speed:this.w/2,growth:1},
-		{fill:'black', size:1, count:10, life:.6, speed:this.w/4,growth:0},
-		{fill:'yellow', size:1, count:10, life:.4, speed:this.w/6,growth:0},
-		{fill:this.makeCircularGradient(192,128,0,.8), size:10, count:3, life:.6, speed:this.w/2.5,growth:0},
-		{fill:this.makeCircularGradient(192,64,0,.8), size:10, count:2, life:.8, speed:this.w/3.25,growth:0},
-		{fill:this.makeCircularGradient(255,255,255,.8), size:this.w/30, count:5, life:.6, speed:this.w/100,growth:50}
+		{fill:this.makeCircularGradient(128,128,128), size:this.w/60, count:20, life:.9, speed:0,growth:50},
+		{fill:this.makeCircularGradient(128,128,128), size:this.w/30, count:10, life:1, speed:this.w/20,growth:50},
+		{fill:this.makeCircularGradient(255,0,0), size:this.w/20, count:5, life:.8, speed:0,growth:50, grav:.01},
+		{fill:this.makeCircularGradient(255,64,0), size:this.w/20, count:5, life:.6, speed:0,growth:50, grav:.01},
+		{fill:this.makeCircularGradient(255,128,0), size:this.w/20, count:5, life:.5, speed:0,growth:80, grav:.01},
+		{fill:'grey', size:1, count:10, life:.8, speed:this.w/2,growth:1, grav:.03},
+		{fill:'black', size:1, count:10, life:.6, speed:this.w/4,growth:0, grav:.03},
+		{fill:'yellow', size:1, count:10, life:.4, speed:this.w/6,growth:0, grav:.03},
+		{fill:this.makeCircularGradient(192,128,0,.8), size:10, count:3, life:.6, speed:this.w/2.5,growth:0,grav:.01},
+		{fill:this.makeCircularGradient(192,64,0,.8), size:10, count:2, life:.8, speed:this.w/3.25,growth:0,grav:.01},
+		{fill:this.makeCircularGradient(255,255,255,.8), size:this.w/30, count:5, life:.6, speed:this.w/100,growth:50,grav:.01}
 	];
 	
 	//~ this.layers = [
@@ -52,6 +53,7 @@ var CanvasExplosion = function(config){
 	this.lifetimeVariation = .1;
 	this.speedVariation = 0;
 	this.particles = [];
+	this.gravity = 1.001;
 	
 	this.prepare();
 }
@@ -88,6 +90,7 @@ CanvasExplosion.prototype = {
 				if(this.speedVariation){
 					speed = speed * (Math.random()*this.speedVariation);
 				}
+				var gravity = typeof thisLayer.grav == 'undefined' ? 0 : thisLayer.grav;
 				
 				this.particles.push({
 					fill : thisLayer.fill,
@@ -98,7 +101,8 @@ CanvasExplosion.prototype = {
 					life : life,
 					y : 0,
 					opacity : 1,
-					growth:thisLayer.growth
+					growth:thisLayer.growth,
+					grav:gravity
 				});
 			}
 		}
@@ -113,6 +117,9 @@ CanvasExplosion.prototype = {
 			this.ctx.restore();
 			return;
 		}
+		
+		var up = Math.PI/2;
+		var newVal = 0;
 				
 		for(var i=0; i<this.particles.length; i++){
 			var particle = this.particles[i];
@@ -125,7 +132,6 @@ CanvasExplosion.prototype = {
 						
 			this.ctx.save();
 			this.ctx.rotate(particle.trajectory);
-			
 			
 			// If the particle is visible, adjust the visibility.
 			if(particle.opacity > 0 && positionRelative < 1){
@@ -147,7 +153,16 @@ CanvasExplosion.prototype = {
 				this.ctx.fillStyle = particle.fill;
 				this.ctx.fillRect(0,particleY,particleSize,particleSize);
 			}
-						
+			
+			if(particle.trajectory > Math.PI/2 && particle.trajectory < Math.PI * 1.5) {
+				if(particle.trajectory > Math.PI){
+					particle.trajectory = particle.trajectory + particle.grav;
+				} else {
+					particle.trajectory = particle.trajectory - particle.grav;
+				}
+			}
+			
+			//~ particle.trajectory = 0;
 			this.ctx.restore();
 		}
 		

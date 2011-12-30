@@ -53,4 +53,9 @@ window.onload = function(){
 		window.requestAnimFrame(tick);
 	}
 	tick();
+	
+	window.setTimeout(function(){
+		smoke1.stopSmoking();
+		smoke2.stopSmoking();
+	},10000);
 }

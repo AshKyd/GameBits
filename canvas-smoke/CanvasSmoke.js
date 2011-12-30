@@ -76,6 +76,16 @@ var CanvasSmoke = function(config){
 	 */
 	this.angle = typeof config.angle == 'undefined' ? 0 : config.angle;
 	
+	/**
+	 * Whether to renew particles and keep smoking.
+	 */
+	this.active = true;
+	
+	/**
+	 * How many active particles were on screen last draw.
+	 */
+	this.activeParticles = 0;
+	
 	this.prepare();
 }
 
@@ -103,6 +113,13 @@ CanvasSmoke.prototype = {
 			this.particles.push([x,y,size,momentum,0]);
 		}
 	},
+	startSmoking : function(){
+		this.prepare();
+		this.active = true;
+	},
+	stopSmoking : function(){
+		this.active = false;
+	},
 	tick : function(){
 		
 		this.ctx.save();
@@ -112,6 +129,8 @@ CanvasSmoke.prototype = {
 		if(this.angle){
 			this.ctx.rotate(this.angle);
 		}
+		
+		var particlesActive = 0;
 		
 		// For each particle
 		for(var i=0; i<this.particles.length; i++){
@@ -134,6 +153,7 @@ CanvasSmoke.prototype = {
 			// If the particle is visible, adjust the visibility.
 			if(particle[4]>0){
 				particle[4] = 1-positionRelative;
+				particlesActive++;
 			}
 			
 			// Set the global alpha based on particle visibility.
@@ -151,11 +171,13 @@ CanvasSmoke.prototype = {
 			particle[1]+=this.particleAcceleration;
 			
 			// Reset the particle when it gets to the top.
-			if(particle[1] > this.h){
+			if(particle[1] > this.h && this.active){
 				particle[1] = 0;
 				particle[4] = 1;
 			}
 		}
+		
+		this.activeParticles = particlesActive;
 		
 		// Restore the settings as they were.
 		this.ctx.restore();
