@@ -1,8 +1,21 @@
+// shim layer with setTimeout fallback
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       || 
+		  window.webkitRequestAnimationFrame || 
+		  window.mozRequestAnimationFrame    || 
+		  window.oRequestAnimationFrame      || 
+		  window.msRequestAnimationFrame     || 
+		  function( callback ){
+			window.setTimeout(callback, 1000 / 60);
+		  };
+})();
+
 window.onload = function(){
 	var canvas = document.getElementById('demo');
 	ctx = canvas.getContext('2d');
 	
 	var spriteWidth = 300;
+	var spriteDuration = 1000; // 1 second.
 	
 	/**
 	 * Instantiate a new explosion.
@@ -18,23 +31,36 @@ window.onload = function(){
 	 * The tick function renders a frame with the current delta to
 	 * the specified context.
 	 */
-	var tick = function(ctx,delta){
+	var drawCallback = function(ctx,delta){
 		explosion.ctx = ctx;
 		explosion.tick(delta);
 	}
 	
 	
 	var cache = new AniCache({
-		tick : tick,
+		callback : drawCallback,
 		w : spriteWidth,
 		h : spriteWidth,
 		deltaStart : explosion.startTime,
-		deltaIncrement : 16,
-		deltaRange : 1700 // Magic number, 2 seconds. Hard coded in CanvasExplosion
+		deltaIncrement : 30,
+		deltaRange : spriteDuration, // Magic number, 2 seconds. Hard coded in CanvasExplosion
+		duration : spriteDuration/1000
 	});
 	
-	console.log(cache);
-	ctx.drawImage(cache.canvas,0,0);
+	//~ console.log(cache);
+	//~ ctx.drawImage(cache.canvas,0,0);
 	
 	
+	/**
+	 * Start the animation loop.
+	 */
+	cache.start(ctx,0,0);
+	var tick = function(){
+		ctx.clearRect(0,0,canvas.width,canvas.height);
+		
+		cache.tick();
+		
+		window.requestAnimFrame(tick);
+	}
+	tick();
 }
