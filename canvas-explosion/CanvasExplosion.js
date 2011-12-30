@@ -49,7 +49,7 @@ var CanvasExplosion = function(config){
 	
 	
 	this.duration = 2;
-	this.startTime = +new Date();
+	this.start();
 	this.lifetimeVariation = .1;
 	this.speedVariation = 0;
 	this.particles = [];
@@ -107,11 +107,19 @@ CanvasExplosion.prototype = {
 			}
 		}
 	},
-	tick : function(){
+	start : function(){
+		this.startTime = +new Date();
+	},
+	tick : function(delta){
 		this.ctx.save();
 		this.ctx.translate(this.x,this.y);
 		
-		var delta = new Date() - this.startTime;
+		if(typeof delta == 'undefined'){
+			delta = new Date() - this.startTime;
+		} else {
+			delta = delta - this.startTime;
+		}
+		
 		var durationRelative = delta/1000/this.duration;
 		if(durationRelative > 1){
 			this.ctx.restore();
