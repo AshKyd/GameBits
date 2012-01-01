@@ -14,8 +14,8 @@ window.onload = function(){
 	var canvas = document.getElementById('demo');
 	ctx = canvas.getContext('2d');
 	
-	var spriteWidth = 300;
-	var spriteDuration = 1000; // 1 second.
+	var spriteWidth = 350;
+	var spriteDuration = 2000; // 1 second.
 	
 	/**
 	 * Instantiate a new explosion.
@@ -42,7 +42,7 @@ window.onload = function(){
 		w : spriteWidth,
 		h : spriteWidth,
 		deltaStart : explosion.startTime,
-		deltaIncrement : 30,
+		deltaIncrement : 30, // Ideally 16 for 60 fps, but we're hitting memory limits :/
 		deltaRange : spriteDuration, // Magic number, 2 seconds. Hard coded in CanvasExplosion
 		duration : spriteDuration/1000
 	});

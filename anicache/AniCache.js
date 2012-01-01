@@ -18,10 +18,19 @@ var AniCache = function(config){
 		this[reqs[i]] = config[reqs[i]];
 	}
 	
+	
+	var cacheWidth = Math.round(this.w * this.getFrameCount());
+	var cacheHeight = Math.round(this.h);
+	
 	this.cacheCan = document.createElement('canvas');
 	this.cacheCan.id = 'anicache';
-	this.cacheCan.width = this.w * this.getFrameCount();
-	this.cacheCan.height = this.h;
+	this.cacheCan.width = cacheWidth;
+	this.cacheCan.height = cacheHeight;
+	
+	if(this.cacheCan.width != cacheWidth || this.cacheCan.height != cacheHeight){
+		throw 'Cache size specified is too large. Try reducing your sprite size or delta interval.';
+	}
+	
 	this.cacheCtx = this.cacheCan.getContext('2d');
 	
 	this.makeSprite();
