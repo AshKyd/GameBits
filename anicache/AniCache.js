@@ -1,4 +1,4 @@
-/**
+1/**
  * AniCache
  * Cache object to make sprites from generative animations.
  */
@@ -64,8 +64,8 @@ AniCache.prototype = {
 	start : function(ctx,x,y){
 		this.startTime = +new Date();
 		this.playCtx = ctx;
-		this.x = x;
-		this.y = y;
+		this.dx = x;
+		this.dy = y;
 	},
 	tick : function(){
 		var delta = +new Date() - this.startTime;
@@ -78,7 +78,7 @@ AniCache.prototype = {
 		
 		// Fixme - I don't remember offhand how to specify a region to
 		// draw from.
-		this.playCtx.drawImage(this.cacheCan,this.x - this.w*thisFrame,this.y);
+		this.playCtx.drawImage(this.cacheCan,this.w*thisFrame,0,this.w,this.h,this.dx,this.dy,this.w,this.h);
 		
 	},
 	getFrameCount : function(){

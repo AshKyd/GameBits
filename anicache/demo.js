@@ -10,6 +10,26 @@ window.requestAnimFrame = (function(){
 		  };
 })();
 
+function getCursorPosition(e,rel) {
+    var x;
+    var y;
+    if (e.pageX || e.pageY) {
+	x = e.pageX;
+	y = e.pageY;
+    }
+    else {
+	x = e.clientX + document.body.scrollLeft +
+            document.documentElement.scrollLeft;
+	y = e.clientY + document.body.scrollTop +
+            document.documentElement.scrollTop;
+    }
+    // Convert to coordinates relative to the canvas
+    x -= rel.offsetLeft;
+    y -= rel.offsetTop;
+
+    return [x,y]
+}
+
 window.onload = function(){
 	var canvas = document.getElementById('demo');
 	ctx = canvas.getContext('2d');
@@ -63,4 +83,11 @@ window.onload = function(){
 		window.requestAnimFrame(tick);
 	}
 	tick();
+	
+	canvas.onclick=function(e){
+		var pos = getCursorPosition(e,canvas);
+		var offset = spriteWidth/2;
+		cache.start(ctx,pos[0]-offset,pos[1]-offset);
+				
+	};
 }
